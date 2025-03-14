@@ -5,6 +5,7 @@ import Controls from "./components/Controls";
 import Footer from "./components/Footer";
 import "./App.css";
 import io from "socket.io-client";
+import annyang from "annyang";
 
 function App() {
   const [isRunning, setIsRunning] = useState(false);
@@ -84,6 +85,34 @@ function App() {
 
   //   recognition.start();
   // };
+
+  const setupVoiceRecognition = () => {
+    if (annyang) {
+      const commands = {
+        "start camera": () => {
+          setIsRunning(true);
+          console.log("start camera");
+        },
+        "stop camera": () => {
+          setIsRunning(false);
+          console.log("stop camera");
+        },
+        one: () => {
+          setMode("cursor");
+          console.log("cursor");
+        },
+        two: () => {
+          setMode("wheel");
+          console.log("scroll");
+        },
+      };
+
+      annyang.addCommands(commands);
+      annyang.start({ autoRestart: true, continuous: true });
+    } else {
+      console.error("Speech Recognition is not supported in this browser.");
+    }
+  };
 
   const startWebcam = async () => {
     try {
@@ -166,18 +195,19 @@ function App() {
     // }
   };
 
-  const toggleTracking = () => {
-    if (!isRunning) {
-      startWebcam();
-    } else {
-      stopWebcam();
-    }
-    setIsRunning(!isRunning);
-  };
+  // const toggleTracking = () => {
+  //   if (!isRunning) {
+  //     startWebcam();
+  //   } else {
+  //     stopWebcam();
+  //   }
+  //   setIsRunning(!isRunning);
+  // };
 
   useEffect(() => {
-    // setupVoiceRecognition();
+    setupVoiceRecognition();
     return () => {
+      annyang.abort();
       stopWebcam();
     };
   }, []);
@@ -194,6 +224,14 @@ function App() {
     }
   }, [mode]);
 
+  useEffect(() => {
+    if (isRunning === true) {
+      startWebcam();
+    } else {
+      stopWebcam();
+    }
+  }, [isRunning]);
+
   return (
     <div className="container">
       {/* <Header /> */}
@@ -207,7 +245,7 @@ function App() {
 
         <Controls
           isRunning={isRunning}
-          toggleTracking={toggleTracking}
+          setIsRunning={setIsRunning}
           mode={mode}
           setMode={setMode}
           sensitivity={sensitivity}

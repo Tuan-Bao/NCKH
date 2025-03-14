@@ -108,11 +108,11 @@ def move_mouse(action):
 
 def scroll_screen(action):
     """ Cuộn màn hình trên client """
-    scroll_amount = 60
+    scroll_amount = 250
 
-    if action == "move_up":
+    if action == "move_left":
         pyautogui.scroll(scroll_amount)  
-    elif action == "move_down":
+    elif action == "move_right":
         pyautogui.scroll(-scroll_amount)
 
 @socketio.on('connect')

@@ -1,23 +1,30 @@
-const Controls = ({ isRunning, toggleTracking, mode, setMode, sensitivity, setSensitivity }) => {
+const Controls = ({
+  isRunning,
+  setIsRunning,
+  mode,
+  setMode,
+  sensitivity,
+  setSensitivity,
+}) => {
   return (
     <div className="controls">
-      <button 
-        className={`control-btn ${isRunning ? 'stop' : 'start'}`}
-        onClick={toggleTracking}
+      <button
+        className={`control-btn ${isRunning ? "stop" : "start"}`}
+        onClick={() => setIsRunning(!isRunning)}
       >
-        {isRunning ? 'Stop' : 'Start'}
+        {isRunning ? "Stop" : "Start"}
       </button>
 
       <div className="mode-selector">
-        <button 
-          className={`mode-btn ${mode === 'cursor' ? 'active' : ''}`}
-          onClick={() => setMode('cursor')}
+        <button
+          className={`mode-btn ${mode === "cursor" ? "active" : ""}`}
+          onClick={() => setMode("cursor")}
         >
           Cursor Mode
         </button>
-        <button 
-          className={`mode-btn ${mode === 'wheel' ? 'active' : ''}`}
-          onClick={() => setMode('wheel')}
+        <button
+          className={`mode-btn ${mode === "wheel" ? "active" : ""}`}
+          onClick={() => setMode("wheel")}
         >
           Scroll Mode
         </button>
@@ -25,11 +32,11 @@ const Controls = ({ isRunning, toggleTracking, mode, setMode, sensitivity, setSe
 
       <div className="sensitivity-control">
         <label htmlFor="sensitivity">Sensitivity:</label>
-        <input 
-          type="range" 
-          id="sensitivity" 
-          min="1" 
-          max="10" 
+        <input
+          type="range"
+          id="sensitivity"
+          min="1"
+          max="10"
           value={sensitivity}
           onChange={(e) => setSensitivity(Number(e.target.value))}
         />
