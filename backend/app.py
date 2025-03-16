@@ -1,4 +1,4 @@
-import os
+import math
 import base64
 import cv2
 import pyautogui
@@ -17,6 +17,21 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Khởi tạo Mediapipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
 face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+
+def rotation_matrix_to_angles(rotation_matrix):
+    """
+    Calculate Euler angles from rotation matrix.
+    :param rotation_matrix: A 3*3 matrix with the following structure
+    [Cosz*Cosy  Cosz*Siny*Sinx - Sinz*Cosx  Cosz*Siny*Cosx + Sinz*Sinx]
+    [Sinz*Cosy  Sinz*Siny*Sinx + Sinz*Cosx  Sinz*Siny*Cosx - Cosz*Sinx]
+    [  -Siny             CosySinx                   Cosy*Cosx         ]
+    :return: Angles in degrees for each axis
+    """
+    x = math.atan2(rotation_matrix[2, 1], rotation_matrix[2, 2])
+    y = math.atan2(-rotation_matrix[2, 0], math.sqrt(rotation_matrix[0, 0] ** 2 +
+                                                     rotation_matrix[1, 0] ** 2))
+    z = math.atan2(rotation_matrix[1, 0], rotation_matrix[0, 0])
+    return np.array([x, y, z]) * 180. / math.pi
 
 def base64_to_image(base64_string):
     """
@@ -39,52 +54,66 @@ def estimate_head_pose(image):
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = face_mesh.process(image_rgb)
 
-    face_3d = []
-    face_2d = []
+    face_coordination_in_real_world = np.array([
+        [285, 528, 200],
+        [285, 371, 152],
+        [197, 574, 128],
+        [173, 425, 108],
+        [360, 574, 128],
+        [391, 425, 108]
+    ], dtype=np.float64)
+    face_coordination_in_image = []
 
     if results.multi_face_landmarks:
         for face_landmarks in results.multi_face_landmarks:
             for idx, lm in enumerate(face_landmarks.landmark):
-                if idx in [33, 263, 1, 61, 291, 199]:
+                if idx in [1, 9, 57, 130, 287, 359]:
                     x, y = int(lm.x * img_w), int(lm.y * img_h)
-                    face_2d.append([x, y])
-                    face_3d.append([x, y, lm.z])
+                    face_coordination_in_image.append([x, y])
 
-                    if idx == 1:  # Mũi
-                        nose_2d = (x, y)
-                        nose_3d = (x, y, lm.z * 3000)
+        face_coordination_in_image = np.array(face_coordination_in_image,
+                                                dtype=np.float64)
 
-        face_2d = np.array(face_2d, dtype=np.float64)
-        face_3d = np.array(face_3d, dtype=np.float64)
-
-        # Thiết lập ma trận camera
+        # The camera matrix
         focal_length = 1 * img_w
-        cam_matrix = np.array([[focal_length, 0, img_h / 2],
-                               [0, focal_length, img_w / 2],
-                               [0, 0, 1]])
+        cam_matrix = np.array([[focal_length, 0, img_w / 2],
+                                [0, focal_length, img_h / 2],
+                                [0, 0, 1]])
+
+        # The Distance Matrix
         dist_matrix = np.zeros((4, 1), dtype=np.float64)
 
-        # Giải phương trình PnP
-        success, rot_vec, trans_vec = cv2.solvePnP(face_3d, face_2d, cam_matrix, dist_matrix)
-        rmat, _ = cv2.Rodrigues(rot_vec)
-        angles, _, _, _, _, _ = cv2.RQDecomp3x3(rmat)
+        # Use solvePnP function to get rotation vector
+        success, rotation_vec, transition_vec = cv2.solvePnP(
+            face_coordination_in_real_world, face_coordination_in_image,
+            cam_matrix, dist_matrix)
 
-        x = angles[0] * 360
-        y = angles[1] * 360
+        # Use Rodrigues function to convert rotation vector to matrix
+        rotation_matrix, jacobian = cv2.Rodrigues(rotation_vec)
+
+        result = rotation_matrix_to_angles(rotation_matrix)
+
+        pitch, yaw, roll = map(int, result)
 
         # Xác định hướng đầu
-        if y < -10:
+        if yaw <= -30:
             head_pose = "Looking Right" # Ảnh bị ngược nên đảo hướng
             action = "move_right"
-        elif y > 10:
+        elif yaw >= 30:
             head_pose = "Looking Left" # Ảnh bị ngược nên đảo hướng
             action = "move_left"
-        elif x < -6:
+        elif pitch <= -5 and 20 >= yaw >= -20 and 5 >= roll >= -5:
             head_pose = "Looking Down"
             action = "move_down"
-        elif x > 16:
+        elif pitch >= 25 and 20 >= yaw >= -20 and 5 >= roll >= -5:
             head_pose = "Looking Up"
             action = "move_up"
+        elif 20 > pitch >= 0 and 20 >= yaw >= -20 and roll <= -20:
+            head_pose = "Tilt Right"
+            action = "click_right"
+        elif 20 > pitch >= 0 and 20 >= yaw >= -20 and roll >= 20:
+            head_pose = "Tilt Left"
+            action = "click_left"
         else:
             head_pose = "Forward"
             action = "stay"
@@ -105,6 +134,10 @@ def move_mouse(action):
         pyautogui.moveTo(x, y - step)
     elif action == "move_down":
         pyautogui.moveTo(x, y + step)
+    elif action == "click_left":
+        pyautogui.click()
+    elif action == "click_right":
+        pyautogui.rightClick()
 
 def scroll_screen(action):
     """ Cuộn màn hình trên client """
