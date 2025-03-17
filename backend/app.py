@@ -123,7 +123,7 @@ def estimate_head_pose(image):
 
 def move_mouse(action):
     """ Điều khiển chuột trên client """
-    step = 30  # Khoảng cách di chuyển chuột mỗi lần
+    step = 20  # Khoảng cách di chuyển chuột mỗi lần
     x, y = pyautogui.position()
 
     if action == "move_left":
@@ -141,7 +141,7 @@ def move_mouse(action):
 
 def scroll_screen(action):
     """ Cuộn màn hình trên client """
-    scroll_amount = 250
+    scroll_amount = 100
 
     if action == "move_left":
         pyautogui.scroll(scroll_amount)  

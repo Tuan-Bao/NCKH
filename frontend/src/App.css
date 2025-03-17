@@ -1,12 +1,13 @@
 #root {
   max-width: 100vw;
-  width: 34%;
+  width: 100%;
   margin: 0 auto;
   padding: 1rem;
   max-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f0f4f8; /* Light background color */
+  background-color: #e2e8f0; /* Màu nền xám nhẹ hơn */
+  overflow: auto;
 }
 
 .container {
@@ -28,19 +29,19 @@ header {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #ffffff; /* White background for header */
+  background-color: #f7fafc; /* Màu nền sáng nhưng nhẹ nhàng hơn cho header */
   border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
 }
 
 h1 {
   font-size: 2.5rem;
-  color: #1e40af; /* Darker blue for text */
+  color: #2b6cb0; /* Màu xanh dương nhẹ cho tiêu đề */
   margin-bottom: 0.5rem;
 }
 
 .description {
-  color: #475569; /* Grayish blue for description */
+  color: #4a5568; /* Màu xám cho mô tả */
   font-size: 1.1rem;
 }
 
@@ -51,6 +52,10 @@ main {
   flex: 1;
   height: 500px;
   justify-content: space-between;
+  background-color: #ffffff; /* Màu nền sáng cho phần chính */
+  color: #333; /* Màu văn bản tối cho phần chính */
+  padding: 1rem;
+  border-radius: 12px;
 }
 
 .video {
@@ -164,6 +169,7 @@ main {
 .sensitivity-control {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   padding: 0 1rem;
 }
@@ -189,37 +195,58 @@ main {
 
 footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 1rem 2rem;
-  background: #ffffff; /* White background for footer */
+  background: #f7fafc; /* Màu nền sáng nhưng nhẹ nhàng cho footer */
   border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  height: 60px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: auto;
+  gap: 0.5rem;
+}
+
+.usage-guide, .voice-guide {
+  margin-bottom: 0.5rem;
+  color: #333; /* Màu văn bản cho hướng dẫn sử dụng */
+}
+
+h4 {
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
+  color: #2b6cb0; /* Màu xanh dương nhẹ cho tiêu đề hướng dẫn */
+}
+
+.status-container {
+  display: flex; /* Sử dụng Flexbox để căn chỉnh */
+  justify-content: space-between; /* Đặt khoảng cách giữa các phần tử */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin: 1rem 0; /* Khoảng cách trên và dưới */
 }
 
 .status {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #64748b;
-  font-weight: 500;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  color: #4a5568; /* Màu xám tối cho trạng thái */
 }
 
 .status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #94a3b8;
+  width: 12px; /* Kích thước của indicator */
+  height: 12px;
+  border-radius: 50%; /* Hình tròn */
+  background: #6b7280; /* Màu xám cho trạng thái không hoạt động */
+  margin-right: 8px; /* Khoảng cách giữa indicator và văn bản */
+  transition: background 0.3s; /* Hiệu ứng chuyển màu */
 }
 
 .status-indicator.active {
-  background: #22c55e;
+  background: #22c55e; /* Màu xanh lá cho trạng thái hoạt động */
+}
+
+.status-indicator.inactive {
+  background: #ef4444; /* Màu đỏ cho trạng thái không hoạt động */
 }
 
 .mode-status {
-  color: #64748b;
-  font-weight: 500;
+  color: #4a5568; /* Màu xám tối cho chế độ hiện tại */
 }
 
 .pip-button {
@@ -236,4 +263,17 @@ footer {
 
 .pip-button:hover {
   background: #e68900;
+}
+
+.notes {
+  margin-top: 0.2rem; /* Khoảng cách trên */
+  margin-bottom: 0.5rem; /* Khoảng cách dưới tiêu đề */
+}
+
+.notes ul {
+  list-style-type: disc; /* Kiểu danh sách chấm */
+}
+
+.notes li {
+  color: #333; /* Màu văn bản cho các mục lưu ý */
 }

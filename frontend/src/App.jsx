@@ -89,11 +89,11 @@ function App() {
   const setupVoiceRecognition = () => {
     if (annyang) {
       const commands = {
-        "start camera": () => {
+        "on camera": () => {
           setIsRunning(true);
           console.log("start camera");
         },
-        "stop camera": () => {
+        "off camera": () => {
           setIsRunning(false);
           console.log("stop camera");
         },
