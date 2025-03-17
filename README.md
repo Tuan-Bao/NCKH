@@ -1,4 +1,4 @@
-# Hệ Thống Điều Khiển Chuột Bằng Hướng Đầu
+# Hệ Thống Điều Khiển Chuột, Cuộn Màn Hình Bằng Hướng Đầu
 
 Hệ thống này cho phép người dùng điều khiển chuột trên máy tính và cuộng màn hình bằng cách sử dụng hướng đầu của họ thông qua webcam và nhận diện giọng nói. Backend được xây dựng bằng Flask, trong khi frontend sử dụng React.
 
